@@ -1,6 +1,8 @@
 import puppeteer from 'puppeteer';
 import dotenv from 'dotenv';
 
+import discordBot from './discord-bot';
+
 dotenv.config();
 
 const main = async () => {
@@ -29,7 +31,7 @@ const main = async () => {
 
   // favorite songs page
   await page.goto('https://open.spotify.com/collection/tracks');
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(3000);
 
   // swarch a childrens of divs for music name
   // I know it can improve, sorry
@@ -69,6 +71,7 @@ const main = async () => {
       //   name,
       //   author,
       // };
+      console.log(name);
       musics.push(name);
     });
 
@@ -76,12 +79,42 @@ const main = async () => {
   });
 
   // wait for forEach code ends
-  await page.waitForTimeout(4000);
+  await page.waitForTimeout(5000);
 
   // here are the names of your songs, enjoy!
   console.log(musicObjs);
 
   await browser.close();
+
+  const BOT_PREFIX = '$';
+
+  discordBot.on('message', msg => {
+    if (msg.content === 'oi bot') {
+      msg.react('❤');
+      msg.channel.send('Olá!');
+    }
+
+    if (msg.content === `${BOT_PREFIX}github`) {
+      msg.channel.send('link: https://github.com/GustavoBonfimS/discord-bot');
+    }
+
+    if (msg.content === `${BOT_PREFIX}help`) {
+      msg.channel.send('$github -> link do repositório \nContruibua!');
+    }
+
+    if (msg.content === `${BOT_PREFIX}spotify`) {
+      // musicObjs.forEach(msc => {
+      //   msg.channel.send(`.play ${msc}`);
+      // });
+
+      // const channel = discordBot.channels.cache.find(
+      //   ch => ch.name === 'baladinha'
+      // );
+      // channel.send(`.play ${musicObjs[0]}`);
+
+      msg.channel.send(`;;play ${musicObjs[0]}`);
+    }
+  });
 };
 
 main();
